@@ -1,0 +1,19 @@
+pragma solidity 0.5.1;
+
+//contract about enum functionality
+contract mycontract {
+    enum State { stopped, started, running }
+    Status public status;
+
+    constructor() public {
+        status = status.stopped;
+    }
+
+    function activate() public {
+        status = status.running;
+    }
+
+    function isActive() public view returns(bool) {
+        return status == status.running;
+    }
+}
