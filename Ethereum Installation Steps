@@ -1,14 +1,19 @@
 //first we will install dependencies
-step1: installing truffle 
 
-step2:installing ganache. --type ganache.exe in google.
+
+
+
+step2:installing ganache.
+link:https://github.com/trufflesuite/ganache/releases
 
 step3:install visual studio code
+link:https://code.visualstudio.com/download
 
 step4:download nodejs
+link:https://nodejs.org/en/
 
 step5:after succesfully installed abve dependencies- open the powershell and type: npm install -g -production windows-build-tools.
 
-step6:npm install -g truffle.
+step6:open the powershell and type: npm install -g truffle.
 
 now you can start developing ethereum dapps in your pc.
