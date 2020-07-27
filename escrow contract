@@ -1,0 +1,149 @@
+pragma solidity ^0.5.1;
+contract shopping{
+
+   
+       address payable public  owner = msg.sender;
+   
+   
+   address payable  public seller;
+   
+    address payable  public buyer;
+    
+   
+     //  uint256 amount;
+       mapping(address=>uint) public totalamount;
+       mapping(address=>patricipants)public paidlist;
+       
+      enum fundsstatus{releasedfunds,sellerwithdrawed,atdispute,returnertobuyer,judgefeecollected}
+    fundsstatus st;
+       
+      struct patricipants{
+         
+       
+        uint selleramount;
+       uint judgefees;
+       bool feepaid;
+       uint feepaidtime;
+       uint amount;
+       bool disputraised;
+       bool fundsrelease;
+      fundsstatus st;
+      }
+   
+       mapping(address=>patricipants) public partlist;
+       
+     function addparticipants(address payable _buyer,address payable _seller)public {
+      buyer=_buyer;
+         seller=_seller;
+         
+         //0x6DCA4bE547D92E6C0976d39749092563a0086A51
+         //0x2861122C063C30c90D07947742D363E372170827
+     }
+   
+     mapping(address=>uint)public depositl;
+    // mapping(address=>uint)public sellerfees;
+//  function payjudge()public payable {
+//      partlist[owner].amount += msg.value;
+//      partlist[msg.sender].feepaid=true;
+//  }
+ 
+ 
+function releasefundsforseller() public payable{
+    partlist[seller].amount +=msg.value;
+    partlist[msg.sender].feepaid=true;
+    partlist[msg.sender].feepaidtime=now;
+    partlist[seller].fundsrelease=true;
+     partlist[seller].st=fundsstatus.releasedfunds;
+}
+
+
+
+ function sellerwithdraw() public payable returns(bool){
+      require(partlist[msg.sender].fundsrelease==true,"buyer hasnt iniatiated payment");
+      require(partlist[buyer].disputraised==false,"buyer raised dispute you canot withdraw funds");
+      require(  block.timestamp >  partlist[msg.sender].feepaidtime + 30 seconds,"withdrawable only after 30 seconds");
+       partlist[seller].st=fundsstatus.sellerwithdrawed;
+     uint amounts=partlist[seller].amount;
+     seller.transfer(amounts);
+     return true;
+ }
+ 
+  function judgeinter(uint allocation)public returns (string memory  ) {
+     
+    //   if(    partlist[seller].feepaid==false){
+           
+           
+    //      uint amounts=partlist[owner].amount;
+         
+    //  buyer.transfer(amounts);  
+    //   }
+       if(allocation==1){
+            // uint judgeamount = partlist[owner].amount/200;
+         
+            uint  amounts=partlist[seller].amount;
+               // owner.transfer(judgeamount);
+     seller.transfer(amounts);
+       }
+         else if(allocation==2){
+             // uint judgeamount = partlist[owner].amount/200;
+          //   owner.transfer(judgeamount);
+           uint amounts=partlist[seller].amount;
+     buyer.transfer(amounts);
+       }
+       else return "enter 1or 2";
+    }
+   
+   
+   
+
+     function judgewithdraw() public payable  returns(bool) {
+   
+         uint amounts = partlist[owner].judgefees;
+       
+        // pendingWithdraws[msg.sender] = 0;
+        // msg.sender.transfer(amount);
+     
+        owner.transfer(amounts);
+        return true;
+
+    }
+   
+   
+    function payjudgefee() public payable returns(bool) {
+        require(msg.value==1 wei,"you need to pay 1 ether to judge");
+       
+         partlist[msg.sender].feepaid=true;
+        partlist[owner].judgefees +=msg.value;
+    }
+   
+    function raisedispute() public  {
+    require(  block.timestamp <  partlist[msg.sender].feepaidtime + 30 seconds,"time for raising dispute exceded");
+      partlist[msg.sender].disputraised=true;
+    }
+   
+   
+   
+   
+   
+   
+   
+    function contractbalance() public view returns(uint){
+        return address(this).balance;
+    }
+   
+   
+    function orgownerbal() public view returns(uint){
+        return address(owner).balance;
+    }
+   
+     
+    function sellerbalance() public view returns(uint){
+        return address(seller).balance;
+    }
+   
+   
+    function buyerbalance()public view returns(uint){
+        return address(buyer).balance;
+    }
+
+}
